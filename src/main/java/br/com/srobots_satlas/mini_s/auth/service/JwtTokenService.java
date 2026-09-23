@@ -59,6 +59,6 @@ public class JwtTokenService
 
     private Instant expirationDate()
     {
-        return ZonedDateTime.now(ZoneId.of("America/Recife")).toInstant();
+        return ZonedDateTime.now(ZoneId.of("America/Recife")).toInstant().plusSeconds(3600);
     }
 }

@@ -14,13 +14,6 @@ public class UserController
     @Autowired
     private UserService userService;
 
-    @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody CreateUserDto createUserDto)
-    {
-        userService.createUser(createUserDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
     @GetMapping("/test")
     public ResponseEntity<String> getAuthenticationTest()
     {

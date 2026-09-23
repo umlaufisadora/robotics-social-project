@@ -2,6 +2,7 @@ package br.com.srobots_satlas.mini_s.auth.controller;
 
 import br.com.srobots_satlas.mini_s.auth.dto.LoginUserDto;
 import br.com.srobots_satlas.mini_s.auth.dto.RecoveryJwtTokenDto;
+import br.com.srobots_satlas.mini_s.user.dto.CreateUserDto;
 import br.com.srobots_satlas.mini_s.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,12 @@ public class AuthController
     {
         RecoveryJwtTokenDto token = userService.authenticateUser(loginUserDto);
         return new ResponseEntity<>(token, HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Void> createUser(@RequestBody CreateUserDto createUserDto)
+    {
+        userService.createUser(createUserDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

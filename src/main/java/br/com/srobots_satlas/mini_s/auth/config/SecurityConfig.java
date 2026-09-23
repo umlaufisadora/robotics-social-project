@@ -24,7 +24,7 @@ public class SecurityConfig
 
     public static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
             "/v1/api/auth/login",
-            "/v1/api/users"
+            "/v1/api/auth"
     };
 
     public static final String [] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED = {

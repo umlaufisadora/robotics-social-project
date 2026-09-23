@@ -29,38 +29,32 @@ public class UserAuthenticationFilter extends OncePerRequestFilter
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
     {
-        if(checkIfEndpointIsNotPublic(request))
+        String token = recoveryToken(request);
+
+        if(token != null)
         {
-            String token = recoveryToken(request);
+            String subject = jwtTokenService.getSubjectFromToken(token);
+            User user = userRepository.findByEmail(subject)
+                    .orElseThrow(() -> new RuntimeException("Usuário não foi encontrado"));
 
-            if(token != null)
-            {
-                String subject = jwtTokenService.getSubjectFromToken(token);
-                User user = userRepository.findByEmail(subject).get();
-                SecurityUser userDetails = new SecurityUser(user);
+            SecurityUser userDetails = new SecurityUser(user);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         filterChain.doFilter(request, response);
     }
 
     private String recoveryToken(HttpServletRequest request)
     {
-        String authoriztionHeader = request.getHeader("Authorization");
-        if(authoriztionHeader != null)
+        String authorizationHeader = request.getHeader("Authorization");
+        if(authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
         {
-            return authoriztionHeader.replace("Bearer", "");
+            return authorizationHeader.substring(7);
         }
         return null;
     }
 
-    private boolean checkIfEndpointIsNotPublic(HttpServletRequest request)
-    {
-        String requestURI = request.getRequestURI();
-        return !Arrays.asList(SecurityConfig.ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).contains(requestURI);
-    }
 }
