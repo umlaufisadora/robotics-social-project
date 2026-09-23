@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -22,24 +23,24 @@ public class SecurityConfig
     private UserAuthenticationFilter userAuthenticationFilter;
 
     public static final String [] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = {
-            "/users/login",
-            "/users"
+            "/v1/api/auth/login",
+            "/v1/api/users"
     };
 
     public static final String [] ENDPOINTS_WITH_AUTHENTICATION_REQUIRED = {
-            "/users/tests"
+            "/v1/api/users/tests"
     };
 
     public static final String [] ENDPOINTS_USER = {
-            "/users/test/user"
+            "/v1/api/users/test/user"
     };
 
     public static final String [] ENDPOINTS_PROFESSOR = {
-            "/users/test/professor"
+            "/v1/api/users/test/professor"
     };
 
     public static final String [] ENDPOINTS_ADMIN = {
-            "/users/test/admin"
+            "/v1/api/users/test/administrator"
     };
 
     @Bean
@@ -52,8 +53,10 @@ public class SecurityConfig
                         .requestMatchers(ENDPOINTS_WITH_AUTHENTICATION_REQUIRED).authenticated()
                         .requestMatchers(ENDPOINTS_USER).hasRole("USER")
                         .requestMatchers(ENDPOINTS_PROFESSOR).hasRole("PROFESSOR")
-                        .requestMatchers(ENDPOINTS_ADMIN).hasRole("ADMIN"))
-                .addFilterBefore(userAuthenticationFilter, UserAuthenticationFilter.class)
+                        .requestMatchers(ENDPOINTS_ADMIN).hasRole("ADMIN")
+                        .requestMatchers("/h2-console/**").permitAll())
+                .headers(header -> header.frameOptions(frame -> frame.sameOrigin()))
+                .addFilterBefore(userAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
